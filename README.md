@@ -48,7 +48,7 @@ I want to be able to have in-app trusted contacts.
    - **Notification to Trusted Contacts**: Trusted contacts receive a notification of the emergency alert, prompting them to respond.
 # Desired Architecture UML Diagrams
 
-[Sequence Diagram](https://github.com/user-attachments/files/17607711/pdf.sequence.diagram.pdf)
-[Classes Diagram](https://github.com/user-attachments/files/17607710/SafeZones.App-1-1.pdf)
+[Sequence Diagram](https://github.com/user-attachments/files/17607711/pdf.sequence.diagram.pdf)\
+[Classes Diagram](https://github.com/user-attachments/files/17607710/SafeZones.App-1-1.pdf)\
 [Events Diagram](https://github.com/user-attachments/files/17607718/D.pdf)
 
