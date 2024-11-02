@@ -40,12 +40,15 @@ Empower individuals and communities to stay informed and safe by enabling real-t
    so that I can take necessary precautions to ensure my safety.
 
 4. As a user,  
-   I want to be able to have in-app trusted contacts.  
+I want to be able to have in-app trusted contacts.  
    **Requirements:**
    - **Adding Trusted Contacts**: The user can search for and add other users as 'Trusted' by their username within the app.
    - **Sending Emergency Alerts**: The user can send an emergency alert to all trusted contacts with a single action.
    - **Location Access**: The emergency alert includes the user’s current location, and the user can grant all trusted contacts access to this location.
    - **Notification to Trusted Contacts**: Trusted contacts receive a notification of the emergency alert, prompting them to respond.
 # Desired Architecture UML Diagrams
-1. [Sequence Diagram](https://discord.com/channels/@me/1208430363324579890/1302309860007874694)
-2. [Class Diagram](https://github.com/user-attachments/files/15827085/SafeZones.App-1.pdf)
+
+[Sequence Diagram](https://github.com/user-attachments/files/17607711/pdf.sequence.diagram.pdf)
+[Classes Diagram](https://github.com/user-attachments/files/17607710/SafeZones.App-1-1.pdf)
+[Events Diagram](https://github.com/user-attachments/files/17607718/D.pdf)
+
