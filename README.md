@@ -1,1 +1,2 @@
-# software-engineering-product-b58
+# SafeZones Product Vision
+Empower individuals and communities to stay informed and safe by enabling real-time reporting and sharing of potentially hazardous events through an intuitive, map-based mobile application. This tool is designed for local residents and tourists alike, providing them with a reliable platform to identify, share, and discuss safety-related incidents. By using location-based alerts, categorized event markers, and a community-driven feedback system, users can proactively navigate urban environments with greater awareness and security.
