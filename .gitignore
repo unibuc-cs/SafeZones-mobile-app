@@ -1,0 +1,26 @@
+# Exclude build and platform-specific folders
+frontend/build/
+frontend/linux/
+frontend/macos/
+frontend/windows/
+frontend/ios/Flutter/Flutter.framework
+frontend/ios/Flutter/Flutter.podspec
+
+# Dart and Flutter generated files
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+
+# Gradle and Android specific files
+frontend/android/.gradle/
+frontend/android/app/debug.keystore
+
+# Exclude logs and temporary files
+frontend/*.log
+frontend/.pub-cache/
+
+# Include essential files
+!frontend/pubspec.yaml
+!frontend/pubspec.lock
+!frontend/firebase.json
