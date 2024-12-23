@@ -24,3 +24,5 @@ frontend/.pub-cache/
 !frontend/pubspec.yaml
 !frontend/pubspec.lock
 !frontend/firebase.json
+
+*.DS_Store
