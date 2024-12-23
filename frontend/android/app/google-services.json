@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "814176253075",
+    "project_id": "safezones-636e9",
+    "storage_bucket": "safezones-636e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814176253075:android:3137bcfdb5e802e44b4966",
+        "android_client_info": {
+          "package_name": "com.example.project_mds"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5Avf_tOH1WXZZ8YO1U6vmc7fdwtGcax4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
