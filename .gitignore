@@ -25,4 +25,39 @@ frontend/.pub-cache/
 !frontend/pubspec.lock
 !frontend/firebase.json
 
+
 *.DS_Store
+
+
+
+# target-ul generat de Maven
+/backend/target/
+
+# Fișiere generate automat
+/backend/*.log
+/backend/*.tmp
+
+# Fișiere IDE și de sistem
+/backend/.idea/
+/backend/*.iml
+/backend/.DS_Store
+/backend/Thumbs.db
+
+# Wrapper Maven (include mvnw și mvnw.cmd)
+# /backend/.mvn/
+# /backend/mvnw
+# /backend/mvnw.cmd
+
+# Fișiere IntelliJ IDEA
+/backend/*.ipr
+/backend/*.iws
+
+# Fișiere Eclipse
+/backend/.classpath
+/backend/.project
+/backend/.settings/
+
+# Configurații și fișiere sensibile
+/backend/.env
+/backend/*.bak
+/backend/*.swp
