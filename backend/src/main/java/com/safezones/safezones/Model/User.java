@@ -1,7 +1,6 @@
-package com.safezones.safezones.users;
+package com.safezones.safezones.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.safezones.safezones.points.Point;
 import jakarta.persistence.*;
 
 import java.util.*;

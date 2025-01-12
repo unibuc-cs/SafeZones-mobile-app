@@ -1,6 +1,4 @@
-package com.safezones.safezones.points;
-
-import java.util.Date;
+package com.safezones.safezones.Dto;
 
 public class PointRequest {
     private String latitude;

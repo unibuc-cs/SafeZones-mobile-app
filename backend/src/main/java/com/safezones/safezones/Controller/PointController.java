@@ -1,8 +1,10 @@
-package com.safezones.safezones.points;
+package com.safezones.safezones.Controller;
 
-import com.safezones.safezones.PointRepository;
-import com.safezones.safezones.UserRepository;
-import com.safezones.safezones.users.User;
+import com.safezones.safezones.Model.Point;
+import com.safezones.safezones.Repository.PointRepository;
+import com.safezones.safezones.Repository.UserRepository;
+import com.safezones.safezones.Dto.PointRequest;
+import com.safezones.safezones.Model.User;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
