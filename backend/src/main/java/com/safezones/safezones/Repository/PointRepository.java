@@ -1,6 +1,6 @@
-package com.safezones.safezones;
+package com.safezones.safezones.Repository;
 
-import com.safezones.safezones.points.Point;
+import com.safezones.safezones.Model.Point;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

@@ -1,10 +1,7 @@
-package com.safezones.safezones.points;
+package com.safezones.safezones.Model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.safezones.safezones.users.User;
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.*;

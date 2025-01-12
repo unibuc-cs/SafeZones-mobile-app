@@ -1,8 +1,7 @@
-package com.safezones.safezones.users;
+package com.safezones.safezones.Controller;
 
-import com.safezones.safezones.UserRepository;
-import com.safezones.safezones.PointRepository;
-import com.safezones.safezones.points.Point;
+import com.safezones.safezones.Model.User;
+import com.safezones.safezones.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
