@@ -9,6 +9,7 @@ import 'package:flutter_demo/components/point.dart';
 import 'package:flutter_demo/components/theme_provider.dart';
 import 'package:flutter_demo/pages/constants.dart';
 import 'package:provider/provider.dart';
+import '../pages/add_trusted_contacts_page.dart';
 
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -52,7 +53,6 @@ class _NavBarState extends State<NavBar> {
           fetchUserLevel(userId),
           fetchUserPoints(userId),
           fetchProfileImage()
-
         ]);
         setState(() {
           _username = userData[0].toString();
@@ -86,19 +86,17 @@ class _NavBarState extends State<NavBar> {
   Future<void> _uploadProfileImage(String path) async {
     try {
       final response = await http.post(
-            Uri.parse('$baseURL/users/update-profile-image/$userId'),
-            headers: <String, String>{
-              'Content-Type':
-                  'application/x-www-form-urlencoded', // Use form data
-            },
-            body: {
-              'imagePath': path
-            },
-          );
+        Uri.parse('$baseURL/users/update-profile-image/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/x-www-form-urlencoded', // Use form data
+        },
+        body: {'imagePath': path},
+      );
     } catch (e) {
       print('Failed to upload profile image: $e');
     }
   }
+
   Future<String> fetchProfileImage() async {
     final response = await http.get(
       Uri.parse('$baseURL/users/get-profile-image/$userId'),
@@ -136,7 +134,8 @@ class _NavBarState extends State<NavBar> {
 
   Future<int> fetchUserPoints(String userId) async {
     if (userId.isNotEmpty) {
-      final response = await http.get(Uri.parse('$baseURL/users/points/$userId'),
+      final response = await http.get(
+          Uri.parse('$baseURL/users/points/$userId'),
           headers: {"Content-Type": "application/json"});
       if (response.statusCode == 200) {
         return int.parse(response.body); // Parse the integer from response body
@@ -147,7 +146,8 @@ class _NavBarState extends State<NavBar> {
     return 0; // Default to 0 points if not fetched
   }
 
-  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
     const p = 0.017453292519943295; // Math.PI / 180
     final c = cos;
     final a = 0.5 -
@@ -179,7 +179,8 @@ class _NavBarState extends State<NavBar> {
       return Center(child: CircularProgressIndicator());
     } else if (_errorMessage != null) {
       return Center(
-        child: Text('Error: $_errorMessage', style: TextStyle(color: textColor)),
+        child:
+            Text('Error: $_errorMessage', style: TextStyle(color: textColor)),
       );
     }
 
@@ -203,8 +204,9 @@ class _NavBarState extends State<NavBar> {
               child: CircleAvatar(
                 backgroundImage: _profileImage != null
                     ? FileImage(_profileImage!)
-                    : NetworkImage(FirebaseAuth.instance.currentUser?.photoURL ??
-                        'https://via.placeholder.com/150') as ImageProvider,
+                    : NetworkImage(
+                        FirebaseAuth.instance.currentUser?.photoURL ??
+                            'https://via.placeholder.com/150') as ImageProvider,
               ),
             ),
             decoration: BoxDecoration(
@@ -218,17 +220,18 @@ class _NavBarState extends State<NavBar> {
           ListTile(
             leading: Icon(Icons.star, color: Colors.yellow),
             title: Text('Level $_userLevel',
-                style: TextStyle(
-                    color: textColor, fontWeight: FontWeight.bold)),
+                style:
+                    TextStyle(color: textColor, fontWeight: FontWeight.bold)),
             onTap: () => null,
           ),
           Divider(indent: 16, endIndent: 16),
           ListTile(
-            leading: Icon(Icons.filter_center_focus_rounded, color: Colors.green),
+            leading:
+                Icon(Icons.filter_center_focus_rounded, color: Colors.green),
             title: Text(
                 'Reward points: $_userPoints${_userLevel == 5 ? "" : "/${_userLevel * 10}"}',
-                style: TextStyle(
-                    color: textColor, fontWeight: FontWeight.bold)),
+                style:
+                    TextStyle(color: textColor, fontWeight: FontWeight.bold)),
             onTap: () => null,
           ),
           Divider(indent: 16, endIndent: 16),
@@ -241,8 +244,8 @@ class _NavBarState extends State<NavBar> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                     side: BorderSide(
-                      color: point.category == 'Hard' ? Colors.red :
-                      Colors.yellow,
+                      color:
+                          point.category == 'Hard' ? Colors.red : Colors.yellow,
                       width: 2.0,
                     ),
                   ),
@@ -262,18 +265,20 @@ class _NavBarState extends State<NavBar> {
                           'Description: ' + (point.description ?? ''),
                           style: TextStyle(color: textColor),
                         ),
-                        onTap: () {
-                        
-                        },
+                        onTap: () {},
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
                         child: Text(
-                          _calculateDistance(_userLatitude, _userLongitude, 
-                                            double.parse(point.latitude), 
-                                            double.parse(point.longitude))
-                                            .floor()
-                                            .toString() + ' meters away',
+                          _calculateDistance(
+                                      _userLatitude,
+                                      _userLongitude,
+                                      double.parse(point.latitude),
+                                      double.parse(point.longitude))
+                                  .floor()
+                                  .toString() +
+                              ' meters away',
                           style: TextStyle(color: textColor),
                         ),
                       ),
@@ -285,27 +290,49 @@ class _NavBarState extends State<NavBar> {
           ),
           ListTile(
             title: Text('Dark Mode',
-                style: TextStyle(
-                    color: textColor, fontWeight: FontWeight.bold)),
+                style:
+                    TextStyle(color: textColor, fontWeight: FontWeight.bold)),
             trailing: Switch(
               activeColor: Colors.white,
               inactiveThumbColor: Colors.white,
               activeTrackColor: Colors.green,
               inactiveTrackColor: const Color.fromARGB(255, 198, 195, 195),
-              value: Provider.of<ThemeProvider>(context).getTheme().brightness == Brightness.dark,
+              value:
+                  Provider.of<ThemeProvider>(context).getTheme().brightness ==
+                      Brightness.dark,
               onChanged: (bool value) {
                 widget.toggleTheme(value);
               },
             ),
             onTap: () => null,
           ),
+          Divider(indent: 16, endIndent: 16),
           SafeArea(
-            child: ListTile(
-              title: Text('Exit',
-                  style: TextStyle(
-                      color: textColor, fontWeight: FontWeight.bold)),
-              leading: Icon(Icons.exit_to_app, color: Colors.red),
-              onTap: () => _signMeOut(context),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.contacts, color: Colors.blue),
+                  title: Text('Trusted Contacts',
+                      style: TextStyle(
+                          color: textColor, fontWeight: FontWeight.bold)),
+                  onTap: () {
+                    // Navigate to the Add Trusted Contacts page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddTrustedContactsPage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  title: Text('Exit',
+                      style: TextStyle(
+                          color: textColor, fontWeight: FontWeight.bold)),
+                  leading: Icon(Icons.exit_to_app, color: Colors.red),
+                  onTap: () => _signMeOut(context),
+                ),
+              ],
             ),
           ),
         ],

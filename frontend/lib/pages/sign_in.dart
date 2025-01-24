@@ -35,27 +35,28 @@ class LoginPage extends StatelessWidget {
       );
       await userCredential.user!.reload();
       // Navigator.of(context).pop();
-      if (userCredential.user!.emailVerified) { // Ascunde dialogul de progres
+      if (userCredential.user!.emailVerified) {
+        // Ascunde dialogul de progres
         Navigator.of(context).pop();
         Navigator.pushNamed(context, '/mapsPage');
       } else {
         showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('You have to verify your email before proceeding!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('You have to verify your email before proceeding!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     } on FirebaseAuthException catch (e) {
       Navigator.of(context).pop(); // Ascunde dialogul de progres
@@ -125,7 +126,7 @@ class LoginPage extends StatelessWidget {
     );
     final UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
-  
+
     // ------------------ retine in baza de date -----------------------------
     final response = await http.get(
       Uri.parse('$baseURL/users/${userCredential.user!.uid}'),
@@ -204,122 +205,121 @@ class LoginPage extends StatelessWidget {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.purple],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.purple],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 170),
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-                SizedBox(height: 10),
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 170),
+                  MyTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
+                  ),
+                  SizedBox(height: 10),
+                  MyTextField(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () => resetPassowrd(context),
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Colors.grey[200]),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Container(
+                    padding: const EdgeInsets.all(25),
+                    margin: const EdgeInsets.symmetric(horizontal: 25),
+                    child: ButtonSignIn(
+                      onTap: () => logMeIn(context),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey[200],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'Or continue with',
+                            style: TextStyle(color: Colors.grey[200]),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.5,
+                            color: Colors.grey[200],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  InkWell(
+                    onTap: () {
+                      signWithGoogle(context);
+                    },
+                    child: SquareLogo(),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: () => resetPassowrd(context),
+                      Text(
+                        "Don't have an account?",
+                        style: TextStyle(color: Colors.grey[200]),
+                      ),
+                      SizedBox(width: 4),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/signInPage');
+                        },
                         child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.grey[200]),
+                          'Register now',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       )
                     ],
-                  ),
-                ),
-                SizedBox(height: 15),
-                Container(
-                  padding: const EdgeInsets.all(25),
-                  margin: const EdgeInsets.symmetric(horizontal: 25),
-                  child: ButtonSignIn(
-                    onTap: () => logMeIn(context),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[200],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          'Or continue with',
-                          style: TextStyle(color: Colors.grey[200]),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[200],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 40),
-                InkWell(
-                  onTap: () {
-                    signWithGoogle(context);
-                  },
-                  child: SquareLogo(),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account?",
-                      style: TextStyle(color: Colors.grey[200]),
-                    ),
-                    SizedBox(width: 4),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signInPage');
-                      },
-                      child: Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }
