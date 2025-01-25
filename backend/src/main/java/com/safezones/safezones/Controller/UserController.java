@@ -79,6 +79,19 @@ public class UserController {
         }
     }
 
+    @GetMapping(path="/mail/{id}")
+    public ResponseEntity<?> getUserEmail(@PathVariable String id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            return ResponseEntity.ok(userOptional.get().getEmail());
+        } else {
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        }
+    }
+
     @PostMapping(path = "/update-profile-image/{userId}")
     public void updateProfileImage(@PathVariable String userId, @RequestParam(name="imagePath") String path) {
         Optional<User> userOptional = userRepository.findById(userId);
