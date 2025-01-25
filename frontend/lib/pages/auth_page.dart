@@ -10,20 +10,18 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
             if (snapshot.hasData) {
               // Utilizatorul este autentificat
               User? user = FirebaseAuth.instance.currentUser;
               if (user != null && user.emailVerified) {
                 print(user.uid);
                 return MapPage();
-              } 
+              }
             }
             return LoginPage();
-          }
-
-      ),
+          }),
     );
   }
 }

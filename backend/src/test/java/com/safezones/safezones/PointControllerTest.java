@@ -1,11 +1,11 @@
 package com.safezones.safezones;
 
-import com.safezones.safezones.points.Point;
-import com.safezones.safezones.points.PointController;
-import com.safezones.safezones.PointRepository;
-import com.safezones.safezones.UserRepository;
-import com.safezones.safezones.points.PointRequest;
-import com.safezones.safezones.users.User;
+import com.safezones.safezones.Model.Point;
+import com.safezones.safezones.Controller.PointController;
+import com.safezones.safezones.Repository.PointRepository;
+import com.safezones.safezones.Repository.UserRepository;
+import com.safezones.safezones.Dto.PointRequest;
+import com.safezones.safezones.Model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -57,7 +57,7 @@ class PointControllerTest {
 
     @Test
     void testGetAllPoints() {
-        List<Point> points = new ArrayList<>();
+        List<Point> points = new ArrayList<Point>();
         Point point1 = new Point();
         point1.setId(1L);
         point1.setLatitude("40.7128");

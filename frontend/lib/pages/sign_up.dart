@@ -66,7 +66,7 @@ class SignInPage extends StatelessWidget {
         }
 
         // -----------------------------------------------------------------------
-      
+
         Navigator.of(context).pop();
         showDialog(
           context: context,
@@ -110,7 +110,7 @@ class SignInPage extends StatelessWidget {
         );
       }
     } on FirebaseAuthException catch (e) {
-      Navigator.of(context).pop(); 
+      Navigator.of(context).pop();
       String errorMessage;
       if (e.code == 'weak-password') {
         errorMessage = 'The password provided is too weak.';
@@ -138,7 +138,7 @@ class SignInPage extends StatelessWidget {
         },
       );
     } catch (e) {
-      Navigator.of(context).pop(); 
+      Navigator.of(context).pop();
       showDialog(
         context: context,
         builder: (context) {
@@ -216,79 +216,80 @@ class SignInPage extends StatelessWidget {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.purple],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.purple],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () {
-                  Navigator.of(context).pop(); // Navigarea înapoi
-                },
+        child: SafeArea(
+          child: Column(
+            children: [
+              AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Navigarea înapoi
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 100),
-                      
-                      const SizedBox(height: 25),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 100),
 
-                      // mail
-                      MyTextField(
-                        controller: emailController,
-                        hintText: 'Email',
-                        obscureText: false,
-                      ),
-                      const SizedBox(height: 10),
+                        const SizedBox(height: 25),
 
-                      // username
-                      MyTextField(
-                        controller: usernameController,
-                        hintText: 'Username',
-                        obscureText: false,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Password
-                      MyTextField(
-                        controller: passwordController,
-                        hintText: 'Password',
-                        obscureText: true,
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      Container(
-                        padding: const EdgeInsets.all(25),
-                        margin: const EdgeInsets.symmetric(horizontal: 25),
-                        child: ButtonSignUp(
-                          onTap: () => checkPasswordCriteria(context),
+                        // mail
+                        MyTextField(
+                          controller: emailController,
+                          hintText: 'Email',
+                          obscureText: false,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+
+                        // username
+                        MyTextField(
+                          controller: usernameController,
+                          hintText: 'Username',
+                          obscureText: false,
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Password
+                        MyTextField(
+                          controller: passwordController,
+                          hintText: 'Password',
+                          obscureText: true,
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        Container(
+                          padding: const EdgeInsets.all(25),
+                          margin: const EdgeInsets.symmetric(horizontal: 25),
+                          child: ButtonSignUp(
+                            onTap: () => checkPasswordCriteria(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}}
+    );
+  }
+}

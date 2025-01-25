@@ -27,12 +27,31 @@ public class UserController {
         user.setId(id);
         user.setUsername(name);
         user.setEmail(email);
+        user.setEmailVerified(false);
         user.setLevel(1);
         user.setRewardPoints(0);
         user.setRegisterDate(new Date());
         userRepository.save(user);
         return "Saved";
     }
+
+    @PutMapping(path = "/update-email-verified/{userId}")
+    public ResponseEntity<String> updateEmailVerified(@PathVariable String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setEmailVerified(true);
+            userRepository.save(user);
+
+            System.out.println("email updated");
+
+            return ResponseEntity.ok("Email verification status updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
 
     @GetMapping(path="/all")
     public @ResponseBody Iterable<User> getAllUsers() {
@@ -45,11 +64,7 @@ public class UserController {
 
         Optional<User> userOptional = userRepository.findById(id);
 
-        if (userOptional.isPresent()) {
-            return ResponseEntity.ok(userOptional.get().getUsername());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return userOptional.map(user -> ResponseEntity.ok(user.getUsername())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @GetMapping(path="/level/{id}")
@@ -78,12 +93,7 @@ public class UserController {
     public ResponseEntity<String> getProfileImage(@PathVariable String userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
-        if (userOptional.isPresent()) {
-
-            return ResponseEntity.ok(userOptional.get().getProfileImage());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return userOptional.map(user -> ResponseEntity.ok(user.getProfileImage())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @GetMapping(path="/points/{id}")

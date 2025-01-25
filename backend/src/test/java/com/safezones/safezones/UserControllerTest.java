@@ -1,7 +1,8 @@
 package com.safezones.safezones;
 
-import com.safezones.safezones.users.User;
-import com.safezones.safezones.users.UserController;
+import com.safezones.safezones.Model.User;
+import com.safezones.safezones.Controller.UserController;
+import com.safezones.safezones.Repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
