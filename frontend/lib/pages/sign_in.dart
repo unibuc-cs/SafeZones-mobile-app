@@ -18,6 +18,21 @@ class LoginPage extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  Future<void> updateEmailVerified(String userId) async {
+    print('Request URL: ${baseURL}/update-email-verified/$userId');
+    final response = await http.put(
+      Uri.parse('${baseURL}/users/update-email-verified/$userId'),
+    );
+
+    if (response.statusCode == 200) {
+      print('Email verification status updated successfully');
+    } else {
+      print(
+          'Failed to update email verification status: ${response.statusCode}');
+      throw Exception('Failed to update email verification status');
+    }
+  }
+
   // sign-in method
   Future<void> logMeIn(BuildContext context) async {
     showDialog(
@@ -37,6 +52,7 @@ class LoginPage extends StatelessWidget {
       // Navigator.of(context).pop();
       if (userCredential.user!.emailVerified) {
         // Ascunde dialogul de progres
+        await updateEmailVerified(userCredential.user!.uid);
         Navigator.of(context).pop();
         Navigator.pushNamed(context, '/mapsPage');
       } else {
