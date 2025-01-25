@@ -133,7 +133,7 @@ class _NavBarState extends State<NavBar> {
         }
       }
       return "";
-  }
+
   }
 
   Future<int> fetchUserLevel(String userId) async {
