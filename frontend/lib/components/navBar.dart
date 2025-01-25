@@ -10,6 +10,7 @@ import 'package:flutter_demo/components/theme_provider.dart';
 import 'package:flutter_demo/pages/constants.dart';
 import 'package:provider/provider.dart';
 import '../pages/add_trusted_contacts_page.dart';
+import 'contact_button.dart';
 
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -27,6 +28,7 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   late String _username = '';
+  late String _userEmail = '';
   late int _userLevel = 1;
   late int _userPoints = 0;
   double _userLatitude = 0.0;
@@ -52,13 +54,15 @@ class _NavBarState extends State<NavBar> {
           fetchUsername(userId),
           fetchUserLevel(userId),
           fetchUserPoints(userId),
-          fetchProfileImage()
+          fetchProfileImage(),
+          fetchEmail(userId)
         ]);
         setState(() {
           _username = userData[0].toString();
           _userLevel = int.parse(userData[1].toString());
           _userPoints = int.parse(userData[2].toString());
           _profileImage = File(userData[3].toString());
+          _userEmail = userData[4].toString();
           _isLoading = false;
         });
       }
@@ -117,6 +121,19 @@ class _NavBarState extends State<NavBar> {
       }
     }
     return "";
+  }
+
+   Future<String> fetchEmail(String userId) async {
+      if (userId.isNotEmpty) {
+        final response = await http.get(Uri.parse('$baseURL/users/mail/$userId'));
+        if (response.statusCode == 200) {
+          return response.body;
+        } else {
+          throw Exception('Failed to fetch username');
+        }
+      }
+      return "";
+  }
   }
 
   Future<int> fetchUserLevel(String userId) async {
@@ -325,6 +342,15 @@ class _NavBarState extends State<NavBar> {
                     );
                   },
                 ),
+                ListTile(
+            title: Text('Contact Support',
+                style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.bold
+                )),
+            leading: Icon(Icons.help_outline, color: Colors.blue),
+            onTap: () => ContactButton.showContactSupportDialog(context, _userEmail),
+          ),
                 ListTile(
                   title: Text('Exit',
                       style: TextStyle(
