@@ -1,16 +1,19 @@
 package com.safezones.safezones.Controller;
 
+import com.safezones.safezones.Dto.UserRequest;
 import com.safezones.safezones.Model.User;
 import com.safezones.safezones.Repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.Optional;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(path="/users")
@@ -44,8 +47,6 @@ public class UserController {
             user.setEmailVerified(true);
             userRepository.save(user);
 
-            System.out.println("email updated");
-
             return ResponseEntity.ok("Email verification status updated successfully");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -54,9 +55,20 @@ public class UserController {
 
 
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
-
-        return userRepository.findAll();
+    public @ResponseBody List<UserRequest> getAllUsers() {
+        List<User> users = (List<User>) userRepository.findAll();
+        return users.stream()
+                .map(user -> new UserRequest(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getEmailVerified(),
+                        user.getRewardPoints(),
+                        user.getLevel(),
+                        user.getRegisterDate(),
+                        user.getProfileImage()
+                ))
+                .collect(Collectors.toList());
     }
 
     @GetMapping(path="/{id}")
@@ -164,5 +176,87 @@ public class UserController {
         }
     }
 
+    @PostMapping(path="/contacts/add-contact/{userId}/{contactId}")
+    @Transactional
+    public ResponseEntity<String> addContact(@PathVariable String userId, @PathVariable String contactId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> contactOptional = userRepository.findById(contactId);
 
+        if (userOptional.isPresent() && contactOptional.isPresent()) {
+            User user = userOptional.get();
+            User contact = contactOptional.get();
+
+            if (!user.getContacts().contains(contact)) {
+                user.getContacts().add(contact);
+                userRepository.save(user);
+                return ResponseEntity.ok("Contact successfully added!");
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User has already added this contact");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("One of users not found.");
+    }
+
+    @GetMapping("/contacts/added-contacts/{userId}")
+    public ResponseEntity<List<Map<String, String>>> getAllContactsByUserId(@PathVariable String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // Prepare the list of contacts
+            List<Map<String, String>> contacts = user.getContacts().stream()
+                    .map(contact -> {
+                        Map<String, String> contactInfo = new HashMap<>();
+                        contactInfo.put("username", contact.getUsername());
+                        contactInfo.put("email", contact.getEmail());
+                        contactInfo.put("id", contact.getId());
+                        return contactInfo;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(contacts);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @GetMapping("/contacts/added-by-contacts/{contactId}")
+    public ResponseEntity<List<Map<String, String>>> getAllUsersWhoAddedContact(@PathVariable String contactId) {
+        Optional<User> contactOptional = userRepository.findById(contactId);
+
+        if (contactOptional.isPresent()) {
+            User contact = contactOptional.get();
+
+            // Fetch the list of users who have added this contact
+            List<Map<String, String>> usersWhoAddedContact = contact.getAddedBy().stream()
+                    .map(user -> {
+                        Map<String, String> userInfo = new HashMap<>();
+                        userInfo.put("username", user.getUsername());
+                        userInfo.put("email", user.getEmail());
+                        userInfo.put("id", user.getId());
+                        return userInfo;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(usersWhoAddedContact);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
+    @PostMapping("/contacts/remove-contact/{userId}/{contactId}")
+    @Transactional
+    public ResponseEntity<String> removeContact(@PathVariable String userId, @PathVariable String contactId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> contactOptional = userRepository.findById(contactId);
+        if (userOptional.isEmpty() || contactOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("One of the users could not be found.");
+        }
+        User user = userOptional.get();
+        User contact = contactOptional.get();
+        if (!user.getContacts().contains(contact)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("This contact has already been removed.");
+        }
+        userRepository.deleteContact(userId, contactId);
+        return ResponseEntity.ok("Contact removed successfully!");
+    }
 }

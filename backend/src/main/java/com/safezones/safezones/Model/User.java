@@ -1,6 +1,7 @@
 package com.safezones.safezones.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -25,9 +26,39 @@ public class User {
         this.profileImage = profileImage;
     }
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_contacts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id")
+    )
+    @JsonManagedReference
+    private Set<User> contacts = new HashSet<>();
+
+    @ManyToMany(mappedBy = "contacts")
+    @JsonBackReference
+    private Set<User> addedBy = new HashSet<>();
+
     @ManyToMany(mappedBy = "likedByUsers")
     @JsonBackReference
     private Set<Point> likedPoints = new HashSet<>();
+
+    public Set<User> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Set<User> contacts) {
+        this.contacts = contacts;
+    }
+
+    public Set<User> getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(Set<User> addedBy) {
+        this.addedBy = addedBy;
+    }
+
 
     public Set<Point> getLikedPoints() {
         return likedPoints;
