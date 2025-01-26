@@ -32,7 +32,13 @@ class _InfoPanelState extends State<InfoPanel> {
   String? _currentUserId;
   String? _userName = '';
   String? _userLevel = '';
-  bool _isLikedByUser = false;
+  bool _isLikedByUser = false;  
+  bool isChatOpen = false;
+
+  final List<ChatMessage> _messages = [];
+  final TextEditingController _messageController = TextEditingController();
+  
+  String _userCurrentName = '';
 
   @override
   void initState() {
@@ -42,7 +48,9 @@ class _InfoPanelState extends State<InfoPanel> {
     _fetchCurrentUserId();
     _fetchUserName();
     _fetchUserLevel();
+    _fetchCurrentUserName();
     _pointLikedByUser();
+    _getMessages();
   }
 
   // Fetch the current user ID from Firebase Auth
@@ -55,6 +63,14 @@ class _InfoPanelState extends State<InfoPanel> {
     }
   }
 
+ Future<void> _getMessages() async {
+    List<ChatMessage> fetchedMessages = await fetchMessages(widget.point.id);
+    print(widget.point.id);
+    setState(() {
+      _messages.clear();
+      _messages.addAll(fetchedMessages);
+    });
+  }
   // Fetch the user name from the server
   Future<void> _fetchUserName() async {
     try {
@@ -65,6 +81,24 @@ class _InfoPanelState extends State<InfoPanel> {
       if (response.statusCode == 200) {
         setState(() {
           _userName = response.body;
+        });
+      } else {
+        throw Exception('Failed to load user name');
+      }
+    } catch (e) {
+      print('Error fetching user name: $e');
+    }
+  }
+
+  Future<void> _fetchCurrentUserName() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${baseURL}/users/${_currentUserId}'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          _userCurrentName = response.body;
         });
       } else {
         throw Exception('Failed to load user name');
@@ -94,17 +128,17 @@ class _InfoPanelState extends State<InfoPanel> {
   }
 
   // Format the timestamp to show how long ago the point was created
-  String _formatTimeAgo(Point point) {
-    final duration = DateTime.now().difference(point.timestamp);
+  String _formatTimeAgo(DateTime date) {
+    final duration = DateTime.now().difference(date);
 
     if (duration.inDays > 0) {
-      return 'Placed ${duration.inDays} days ago';
+      return '${duration.inDays} days ago';
     } else if (duration.inHours > 0) {
-      return 'Placed ${duration.inHours} hours ago';
+      return '${duration.inHours} hours ago';
     } else if (duration.inMinutes > 0) {
-      return 'Placed ${duration.inMinutes} minutes ago';
+      return '${duration.inMinutes} minutes ago';
     } else {
-      return 'Placed just now';
+      return 'Just now';
     }
   }
 
@@ -202,113 +236,218 @@ Widget build(BuildContext context) {
   // Check if the point belongs to the current user
   bool isCurrentUserPoint = _currentUserId == widget.point.userId;
 
-  return SingleChildScrollView(
-    child: Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (_userLevel != '')
-              ModernTrustFactor(
-                event: widget.point.event,
-                userLevel: _userLevel!,
+  return Stack(
+      children: [
+        AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          height: isChatOpen ? 500 : 300,
+          child: SingleChildScrollView(
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
               ),
-            SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(Icons.access_time, color: textColor),
-                SizedBox(width: 8),
-                Text(
-                  _formatTimeAgo(widget.point),
-                  style: TextStyle(fontSize: 16, color: textColor),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.description, color: textColor),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Description: ${widget.point.description}",
-                    style: TextStyle(fontSize: 16, color: textColor),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.thumb_up, color: textColor),
-                SizedBox(width: 8),
-                Text(
-                  "Likes: " + _voteCount.toString(),
-                  style: TextStyle(fontSize: 16, color: textColor),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Visibility(
-                  visible: !isCurrentUserPoint, // Hide the button if the point belongs to the current user
-                  child: AbsorbPointer(
-                    absorbing: isCurrentUserPoint, // Disable the button if the point belongs to the current user
-                    child: ElevatedButton.icon(
-                      onPressed: _incrementVotes,
-                      icon: Icon(
-                        _isLikedByUser ? Icons.thumb_up : Icons.thumb_up_off_alt,
-                        color: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.all(30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (_userLevel != '') ModernTrustFactor(event: widget.point.event, userLevel: _userLevel!),
+                    SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Icon(Icons.access_time, color: textColor),
+                        SizedBox(width: 8),
+                        Text(
+                          _formatTimeAgo(widget.point.timestamp),
+                          style: TextStyle(fontSize: 16, color: textColor),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.thumb_up, color: textColor),
+                        SizedBox(width: 8),
+                        Text(
+                          "Likes: $_voteCount",
+                          style: TextStyle(fontSize: 16, color: textColor),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        ElevatedButton.icon(
+                          onPressed: _incrementVotes,
+                          icon: Icon(
+                            _isLikedByUser ? Icons.thumb_up : Icons.thumb_up_off_alt,
+                            color: Colors.white,
+                          ),
+                          label: Text(
+                            _isLikedByUser ? 'Liked' : 'Like',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _isLikedByUser ? Colors.green : Colors.grey,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              isChatOpen = !isChatOpen;
+                            });
+                          },
+                          icon: Icon(isChatOpen ? Icons.close : Icons.chat, color: Colors.white),
+                          label: Text(
+                            isChatOpen ? 'Close Chat' : 'Open Chat',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 30, 82, 238),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (isChatOpen) ...[
+                      Divider(),
+                      Text(
+                        "Chat Section",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      label: Text(
-                        _isLikedByUser ? 'Liked' : 'Like',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(height: 8),
+                      Container(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: _messages.length,
+                          itemBuilder: (context, index) {
+                            final message = _messages[index];
+                            final isCurrentUserMessage = message.username == _userName;
+                            return Container(
+                              margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isCurrentUserMessage ? Colors.blue[50] : Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                                border: isCurrentUserMessage
+                                    ? Border.all(color: Colors.blue, width: 2)
+                                    : null,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    message.username,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: isCurrentUserMessage ? Colors.blue : Colors.grey[700],
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(message.content),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    _formatTimeAgo(message.timestamp),
+                                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _isLikedByUser ? Colors.green : Colors.grey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _messageController,
+                                decoration: InputDecoration(
+                                  hintText: "Type your message",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
+                                onSubmitted: _sendMessage,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: () => _sendMessage(_messageController.text),
+                              child: Icon(Icons.send),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
+                    ],
+                  ],
                 ),
-                ElevatedButton.icon(
-                  onPressed: widget.onClose,
-                  icon: Icon(Icons.close, color: Colors.white),
-                  label: Text(
-                    'Close',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      ],
+    );
 }
 
+Future<List<ChatMessage>> fetchMessages(int chatId) async {
+  final response = await http.get(
+    Uri.parse('${baseURL}/chat/get/$chatId'),
+  );
+
+  if (response.statusCode == 200) {
+    List<dynamic> messages = jsonDecode(response.body);
+    return messages.map((msg) => ChatMessage(
+      content: msg['content'] as String,
+      username: msg['username'] as String,
+      timestamp: DateTime.parse(msg['timestamp']),  // Parsează timestamp-ul
+    )).toList();
+  } else {
+    throw Exception('Failed to load messages');
+  }
+}
+void _sendMessage(String message) {
+  if (message.isEmpty) return;
+
+  DateTime now = DateTime.now(); // Timestamp-ul mesajului
+  setState(() {
+    _messages.add(new ChatMessage(content: message, username: _userCurrentName, timestamp: now));
+  });
+
+  _messageController.clear(); // Curăță câmpul de text
+
+  // Trimiterea mesajului către backend
+  sendMessage(message, _currentUserId ?? "", widget.point.id, now);
+}
+
+Future<void> sendMessage(String content, String userId, int chatId, DateTime timestamp) async {
+  final response = await http.post(
+    Uri.parse('${baseURL}/chat/add'),
+    headers: <String, String>{'Content-Type': 'application/json'},
+    body: jsonEncode(<String, String>{
+      "content": content,
+      "userId": userId,
+      "chatId": chatId.toString(),
+      "timestamp": timestamp.toIso8601String(), 
+    }),
+  );
+  if (response.statusCode == 200) {
+    print('Message saved successfully');
+  } else {
+    print('Failed to save message');
+  }
+}
+
+}
+
+class ChatMessage {
+  final String content;
+  final String username;
+  final DateTime timestamp; // Adăugăm timestamp-ul
+
+  ChatMessage({required this.content, required this.username, required this.timestamp});
 }
