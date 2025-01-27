@@ -2,11 +2,15 @@ package com.safezones.safezones.Model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
+@Getter
+@Setter
 public class Point {
 
     @Id
@@ -38,73 +42,4 @@ public class Point {
         this.likedByUsers = likedByUsers;
     }
 
-    public Long getVotes() {
-        return votes;
-    }
-    public void setVotes(Long votes) {
-        this.votes = votes;
-    }
-    public String getEvent() {
-        return event;
-    }
-
-    public void setEvent(String event) {
-        this.event = event;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 }
