@@ -1,6 +1,12 @@
 package com.safezones.safezones.Dto;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
+@Getter
+@Setter
 public class UserRequest {
     private String id;
     private String username;
@@ -10,9 +16,10 @@ public class UserRequest {
     private int level;
     private Date registerDate;
     private String profileImage;
+    private Double latitude;
+    private Double longitude;
 
-    // Constructor
-    public UserRequest(String id, String username, String email, boolean emailVerified, int rewardPoints, int level, Date registerDate, String profileImage) {
+    public UserRequest(String id, String username, String email, boolean emailVerified, int rewardPoints, int level, Date registerDate, String profileImage, Double latitude, Double longitude) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -21,70 +28,8 @@ public class UserRequest {
         this.level = level;
         this.registerDate = registerDate;
         this.profileImage = profileImage;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public int getRewardPoints() {
-        return rewardPoints;
-    }
-
-    public void setRewardPoints(int rewardPoints) {
-        this.rewardPoints = rewardPoints;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public Date getRegisterDate() {
-        return registerDate;
-    }
-
-    public void setRegisterDate(Date registerDate) {
-        this.registerDate = registerDate;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
 }

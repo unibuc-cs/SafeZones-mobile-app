@@ -66,7 +66,9 @@ public class UserController {
                         user.getRewardPoints(),
                         user.getLevel(),
                         user.getRegisterDate(),
-                        user.getProfileImage()
+                        user.getProfileImage(),
+                        user.getLatitude(),
+                        user.getLongitude()
                 ))
                 .collect(Collectors.toList());
     }
@@ -258,5 +260,46 @@ public class UserController {
         }
         userRepository.deleteContact(userId, contactId);
         return ResponseEntity.ok("Contact removed successfully!");
+    }
+
+    @PutMapping("/update-location/{userId}")
+    public ResponseEntity<String> updateLocation(@PathVariable String userId, @RequestParam(name="latitude") Double latitude, @RequestParam(name="longitude") Double longitude) {
+
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setLatitude(latitude);
+            user.setLongitude(longitude);
+            userRepository.save(user);
+            return ResponseEntity.ok("Location succesfully updated");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+    @GetMapping("/get-locations/{userId}")
+    public ResponseEntity<List<Map<String, String>>> getLocations(@PathVariable String userId) {
+
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            List<Map<String, String>> contacts = user.getContacts().stream()
+                    .map(contact -> {
+                        Map<String, String> contactInfo = new HashMap<>();
+                        contactInfo.put("username", contact.getUsername());
+                        contactInfo.put("latitude", contact.getLatitude().toString());
+                        contactInfo.put("longitude", contact.getLongitude().toString());
+                        return contactInfo;
+                    })
+                    .collect(Collectors.toList());
+            //System.out.println("Contacts: " + contacts);
+
+            return ResponseEntity.ok(contacts);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+
     }
 }

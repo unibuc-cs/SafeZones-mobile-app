@@ -35,6 +35,7 @@ class _MapPageState extends State<MapPage> {
   String? _darkMapStyle;
   String? _lightMapStyle;
   late List<Point> nearbyPoints = [];
+  List<Map<String, dynamic>> _trustedUsersLocations = [];
 
   bool _isInfoPanelVisible = false;
   Point? _selectedPoint;
@@ -55,6 +56,32 @@ class _MapPageState extends State<MapPage> {
   void setStateIfMounted(f) {
     if (mounted) setState(f);
   }
+  Future<Set<Marker>> _createTrustedUserMarkers() async {
+  Set<Marker> trustedUserMarkers = {};
+
+  for (var userLocation in _trustedUsersLocations) {
+    double latitude = double.parse(userLocation['latitude']);
+    double longitude = double.parse(userLocation['longitude']);
+    String username = userLocation['username'];
+
+    // Folosiți un icon special pentru utilizatorii de încredere
+    BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(size: Size(100, 100)),
+      "assets/images/check.png", 
+    );
+
+
+    Marker marker = Marker(
+      markerId: MarkerId('$username'),
+      position: LatLng(latitude, longitude),
+      icon: icon,
+      infoWindow: InfoWindow(title: '$username'), // Adăugați un titlu dacă este necesar
+    );
+
+    trustedUserMarkers.add(marker);
+  }
+  return trustedUserMarkers;
+}
 
   Future<void> _fetchMarkers() async {
     try {
@@ -81,12 +108,18 @@ class _MapPageState extends State<MapPage> {
           onTap: () => _onMarkerTapped(point),
         );
       }));
+
       setStateIfMounted(() {
         _markers = newMarkers;
       });
     } catch (e) {
       print('Error fetching markers: $e');
     }
+  }
+
+  Future<void> fetchContactsMarkers() async {
+    Set<Marker> trustedUserMarkers = await _createTrustedUserMarkers();
+    _markers.addAll(trustedUserMarkers);
   }
   
   String _formatTimeAgo(Duration duration) {
@@ -112,6 +145,8 @@ class _MapPageState extends State<MapPage> {
     _initLocationStream();
     _startFetchingMarkers();
     _getNearbyPoints();
+    _fetchTrustedUsersLocations();
+    
   }
 
   void _updateCircle([Position? position]) {
@@ -276,8 +311,10 @@ class _MapPageState extends State<MapPage> {
   void _startFetchingMarkers() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
     _getCurrentLocation();
-    _fetchMarkers();
     _getNearbyPoints();
+    _fetchTrustedUsersLocations();
+    _fetchMarkers();
+    fetchContactsMarkers();
     }
     );
   }
@@ -307,11 +344,58 @@ class _MapPageState extends State<MapPage> {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       _location = position;
+      _sendLocationToBackend(position);
       _updateCircle(position);
     } catch (e) {
       print("Error: $e");
     }
   }
+
+  void _sendLocationToBackend(Position position) async {
+    final String url = '$baseURL/users/update-location/${FirebaseAuth.instance.currentUser?.uid}';
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/x-www-form-urlencoded', // Use form data
+        },
+        body: {
+          'latitude': position.latitude.toString(),
+          'longitude': position.longitude.toString()
+        },
+      );
+
+      if (response.statusCode != 200) {
+        print("Failed to update location on the backend");
+      }
+    } catch (error) {
+      print("Error sending location to backend: $error");
+    }
+  }
+
+  Future<void> _fetchTrustedUsersLocations() async {
+  final String url = '$baseURL/users/get-locations/${FirebaseAuth.instance.currentUser?.uid}';
+  try {
+    final response = await http.get(Uri.parse(url),
+      headers: {'Content-Type': 'application/json'}
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+       _trustedUsersLocations  = List<Map<String, dynamic>>.from(data);
+       //print(_trustedUsersLocations);
+       //print("\n");
+
+      });
+    } else {
+      print("Failed to fetch trusted users' locations");
+    }
+  } catch (error) {
+    print("Error fetching trusted users' locations: $error");
+  }
+}
+
 
   Future<void> addPointToUser(double latitude, double longitude,
       String description, String category, String event) async {
