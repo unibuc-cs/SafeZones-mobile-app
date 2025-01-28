@@ -70,7 +70,7 @@ class _MapPageState extends State<MapPage> {
       try {
         icon = await BitmapDescriptor.fromAssetImage(
           ImageConfiguration(size: Size(100, 100)),
-          "assets/images/icons8-friend-64.png",
+          "assets/images/icons8-friend-32.png",
         );
       } catch (e) {
         print("Error loading image: $e");
@@ -400,7 +400,11 @@ class _MapPageState extends State<MapPage> {
     } else {
       print("Failed to fetch trusted users' locations");
     }
+  } catch (e) {
+      print(e.toString());
+    }
   }
+  
 
   Future<void> addPointToUser(double latitude, double longitude,
       String description, String category, String event) async {
