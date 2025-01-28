@@ -1,5 +1,13 @@
 package com.safezones.safezones.Dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Getter
+@Setter
 public class PointRequest {
     private String latitude;
     private String longitude;
@@ -7,8 +15,9 @@ public class PointRequest {
     private String category;
     private String event;
     private Long votes;
-    // private Date timestamp;
+    private LocalDateTime timestamp;
     private String userId;
+    private Long id;
 
     public PointRequest(String latitude, String longitude, String description, String category, String userId, String event) {
         this.latitude = latitude;
@@ -19,6 +28,22 @@ public class PointRequest {
         this.userId = userId;
         this.event = event;
         this.votes = 0L;
+    }
+
+    public PointRequest() {
+
+    }
+
+    public PointRequest(Long id, String userId, String latitude, String longitude, LocalDateTime timestamp, String description, String category, String event, Long votes) {
+        this.id = id;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.description = description;
+        this.category = category;
+        this.timestamp = timestamp;
+        this.userId = userId;
+        this.event = event;
+        this.votes = votes;
     }
 
     // Getters și Setters

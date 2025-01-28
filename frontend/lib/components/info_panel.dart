@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -254,6 +255,19 @@ Widget build(BuildContext context) {
                   children: <Widget>[
                     if (_userLevel != '') ModernTrustFactor(event: widget.point.event, userLevel: _userLevel!),
                     SizedBox(height: 15),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.description, color: textColor),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "Description: ${widget.point.description}",
+                            style: TextStyle(fontSize: 16, color: textColor),
+                          ),
+                        ),
+                      ],
+                    ),
                     Row(
                       children: [
                         Icon(Icons.access_time, color: textColor),
