@@ -56,32 +56,39 @@ class _MapPageState extends State<MapPage> {
   void setStateIfMounted(f) {
     if (mounted) setState(f);
   }
+
   Future<Set<Marker>> _createTrustedUserMarkers() async {
-  Set<Marker> trustedUserMarkers = {};
+    Set<Marker> trustedUserMarkers = {};
 
-  for (var userLocation in _trustedUsersLocations) {
-    double latitude = double.parse(userLocation['latitude']);
-    double longitude = double.parse(userLocation['longitude']);
-    String username = userLocation['username'];
+    for (var userLocation in _trustedUsersLocations) {
+      double latitude = double.parse(userLocation['latitude']);
+      double longitude = double.parse(userLocation['longitude']);
+      String username = userLocation['username'];
 
-    // Folosiți un icon special pentru utilizatorii de încredere
-    BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(size: Size(100, 100)),
-      "assets/images/check.png", 
-    );
+      BitmapDescriptor icon;
+      try {
+        icon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(100, 100)),
+          "assets/images/icons8-friend-64.png",
+        );
+      } catch (e) {
+        print("Error loading image: $e");
+        // You can set a default icon or handle the error as needed
+        icon = BitmapDescriptor.defaultMarker;
+      }
 
+      Marker marker = Marker(
+        markerId: MarkerId('$username'),
+        position: LatLng(latitude, longitude),
+        icon: icon,
+        infoWindow: InfoWindow(
+            title: '$username'), // Adăugați un titlu dacă este necesar
+      );
 
-    Marker marker = Marker(
-      markerId: MarkerId('$username'),
-      position: LatLng(latitude, longitude),
-      icon: icon,
-      infoWindow: InfoWindow(title: '$username'), // Adăugați un titlu dacă este necesar
-    );
-
-    trustedUserMarkers.add(marker);
+      trustedUserMarkers.add(marker);
+    }
+    return trustedUserMarkers;
   }
-  return trustedUserMarkers;
-}
 
   Future<void> _fetchMarkers() async {
     try {
@@ -121,7 +128,7 @@ class _MapPageState extends State<MapPage> {
     Set<Marker> trustedUserMarkers = await _createTrustedUserMarkers();
     _markers.addAll(trustedUserMarkers);
   }
-  
+
   String _formatTimeAgo(Duration duration) {
     if (duration.inDays > 0) {
       return 'Placed ${duration.inDays} days ago';
@@ -146,7 +153,6 @@ class _MapPageState extends State<MapPage> {
     _startFetchingMarkers();
     _getNearbyPoints();
     _fetchTrustedUsersLocations();
-    
   }
 
   void _updateCircle([Position? position]) {
@@ -229,6 +235,7 @@ class _MapPageState extends State<MapPage> {
         isDark ? ThemeData.dark() : ThemeData.light(),
       );
     }
+
     return Scaffold(
       appBar: AppBar(),
       drawer: NavBar(toggleTheme: toggleTheme, nearbyPoints: nearbyPoints),
@@ -264,7 +271,7 @@ class _MapPageState extends State<MapPage> {
           Align(
             alignment: Alignment.topRight,
             child: Padding(
-              padding: EdgeInsets.only(top: 16.0, right: 16.0), 
+              padding: EdgeInsets.only(top: 16.0, right: 16.0),
               child: FloatingActionButton(
                 onPressed: _goToCurrentLocation,
                 child: Icon(
@@ -275,7 +282,6 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
           ),
-
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -291,7 +297,6 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
           ),
-        
           if (_isInfoPanelVisible && _selectedPoint != null)
             SafeArea(
               child: Align(
@@ -307,16 +312,14 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-
   void _startFetchingMarkers() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-    _getCurrentLocation();
-    _getNearbyPoints();
-    _fetchTrustedUsersLocations();
-    _fetchMarkers();
-    fetchContactsMarkers();
-    }
-    );
+      _getCurrentLocation();
+      _getNearbyPoints();
+      _fetchTrustedUsersLocations();
+      _fetchMarkers();
+      fetchContactsMarkers();
+    });
   }
 
   void _onMapTapped() async {
@@ -352,7 +355,8 @@ class _MapPageState extends State<MapPage> {
   }
 
   void _sendLocationToBackend(Position position) async {
-    final String url = '$baseURL/users/update-location/${FirebaseAuth.instance.currentUser?.uid}';
+    final String url =
+        '$baseURL/users/update-location/${FirebaseAuth.instance.currentUser?.uid}';
     try {
       final response = await http.put(
         Uri.parse(url),
@@ -374,28 +378,26 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _fetchTrustedUsersLocations() async {
-  final String url = '$baseURL/users/get-locations/${FirebaseAuth.instance.currentUser?.uid}';
-  try {
-    final response = await http.get(Uri.parse(url),
-      headers: {'Content-Type': 'application/json'}
-    );
+    final String url =
+        '$baseURL/users/get-locations/${FirebaseAuth.instance.currentUser?.uid}';
+    try {
+      final response = await http
+          .get(Uri.parse(url), headers: {'Content-Type': 'application/json'});
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      setState(() {
-       _trustedUsersLocations  = List<Map<String, dynamic>>.from(data);
-       //print(_trustedUsersLocations);
-       //print("\n");
-
-      });
-    } else {
-      print("Failed to fetch trusted users' locations");
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _trustedUsersLocations = List<Map<String, dynamic>>.from(data);
+          //print(_trustedUsersLocations);
+          //print("\n");
+        });
+      } else {
+        print("Failed to fetch trusted users' locations");
+      }
+    } catch (error) {
+      print("Error fetching trusted users' locations: $error");
     }
-  } catch (error) {
-    print("Error fetching trusted users' locations: $error");
   }
-}
-
 
   Future<void> addPointToUser(double latitude, double longitude,
       String description, String category, String event) async {
@@ -431,23 +433,26 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<List<Point>> _getNearbyPoints() async {
-  String userId = FirebaseAuth.instance.currentUser!.uid;
-  try {
-    List<Point> points = await _getMarkersFromBackend();
-    nearbyPoints.clear();
-    for (Point p in points) {
-      double latitude = double.parse(p.latitude);
-      double longitude = double.parse(p.longitude);
-      if (_calculateDistance(latitude, longitude, _location?.latitude, _location?.longitude) <= 1000 &&
-        p.userId != userId) {
-        nearbyPoints.add(p);
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    try {
+      List<Point> points = await _getMarkersFromBackend();
+      nearbyPoints.clear();
+      for (Point p in points) {
+        double latitude = double.parse(p.latitude);
+        double longitude = double.parse(p.longitude);
+        if (_calculateDistance(latitude, longitude, _location?.latitude,
+                    _location?.longitude) <=
+                1000 &&
+            p.userId != userId) {
+          nearbyPoints.add(p);
+        }
       }
+    } catch (e) {
+      print(e.toString());
     }
-  } catch (e) {
-    print(e.toString());
+    return nearbyPoints;
   }
-  return nearbyPoints;
-}
+
   void _initLocationStream() {
     StreamSubscription<Position> positionStream = Geolocator.getPositionStream(
       desiredAccuracy: LocationAccuracy.high,
