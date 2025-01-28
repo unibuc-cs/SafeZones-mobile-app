@@ -36,36 +36,42 @@ public class PointController {
         point.setTimestamp(LocalDateTime.now());
         point.setUserId(pointRequest.getUserId());
         point.setEvent(pointRequest.getEvent());
-        point.setVotes(pointRequest.getVotes());
+        point.setVotes(0L);
         pointRepository.save(point);
-        System.out.println(point.getVotes());
         return "Point added successfully";
     }
 
     @GetMapping(path = "/all")
-    public @ResponseBody Iterable<Point> getAllPoints() {
+    public @ResponseBody Iterable<PointRequest> getAllPoints() {
         Iterable<Point> allPoints = pointRepository.findAll();
         LocalDateTime currentTime = LocalDateTime.now();
 
-        List<Point> filteredPoints = new ArrayList<>();
+        List<PointRequest> filteredPoints = new ArrayList<>();
 
         for (Point point : allPoints) {
 
             LocalDateTime placementTime = point.getTimestamp();
 
-            if (point.getCategory().equals("Hard")) {
-                if (placementTime.plusHours(24).isAfter(currentTime)) {
-                    filteredPoints.add(point);
-                }
-            } else if (point.getCategory().equals("Medium")) {
-                if (placementTime.plusHours(12).isAfter(currentTime)) {
-                    filteredPoints.add(point);
-                }
-            } else {
-                filteredPoints.add(point);
-            }
-        }
+            PointRequest pointRequest = new PointRequest(
+                    point.getId(),
+                    point.getUserId(),
+                    point.getLatitude(),
+                    point.getLongitude(),
+                    point.getTimestamp(),
+                    point.getDescription(),
+                    point.getCategory(),
+                    point.getEvent(),
+                    point.getVotes());
 
+            if ((point.getCategory().equals("Hard") && placementTime.plusHours(24).isAfter(currentTime))
+                || (point.getCategory().equals("Medium") && placementTime.plusHours(12).isAfter(currentTime))){
+
+                filteredPoints.add(pointRequest);
+                System.out.println(point.getId() + " " + point.getTimestamp());
+            }
+
+            //System.out.println(point.toString());
+        }
         return filteredPoints;
     }
 

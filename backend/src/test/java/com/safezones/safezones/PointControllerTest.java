@@ -82,9 +82,9 @@ class PointControllerTest {
 
         when(pointRepository.findAll()).thenReturn(points);
 
-        Iterable<Point> result = pointController.getAllPoints();
+        Iterable<PointRequest> result = pointController.getAllPoints();
 
-        assertEquals(2, ((List<Point>) result).size());
+        assertEquals(2, ((List<PointRequest>) result).size());
     }
 
     @Test

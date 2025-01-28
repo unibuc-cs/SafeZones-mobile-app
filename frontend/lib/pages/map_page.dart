@@ -65,11 +65,7 @@ class _MapPageState extends State<MapPage> {
     String username = userLocation['username'];
 
     // Folosiți un icon special pentru utilizatorii de încredere
-    BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(size: Size(100, 100)),
-      "assets/images/check.png", 
-    );
-
+    BitmapDescriptor icon = BitmapDescriptor.defaultMarker;
 
     Marker marker = Marker(
       markerId: MarkerId('$username'),
@@ -86,6 +82,7 @@ class _MapPageState extends State<MapPage> {
   Future<void> _fetchMarkers() async {
     try {
       List<Point> points = await _getMarkersFromBackend();
+      //print(points.length);
       List<Future<BitmapDescriptor>> futures = points.map((point) {
         String assetPath = point.category == 'Medium'
             ? "assets/images/_yellow.png"
@@ -109,8 +106,12 @@ class _MapPageState extends State<MapPage> {
         );
       }));
 
+      Set<Marker> trustedUserMarkers = await _createTrustedUserMarkers();
+      newMarkers.addAll(trustedUserMarkers);
+
       setStateIfMounted(() {
         _markers = newMarkers;
+        //print(_markers);
       });
     } catch (e) {
       print('Error fetching markers: $e');
@@ -384,9 +385,6 @@ class _MapPageState extends State<MapPage> {
       final List<dynamic> data = json.decode(response.body);
       setState(() {
        _trustedUsersLocations  = List<Map<String, dynamic>>.from(data);
-       //print(_trustedUsersLocations);
-       //print("\n");
-
       });
     } else {
       print("Failed to fetch trusted users' locations");
