@@ -86,6 +86,7 @@ flutter:
     - assets/images/_yellow.png
     - assets/images/icons8-friend-64.png
     - assets/images/contact.png
+    - assets/images/icons8-friend-32.png
     
 
   # The following line ensures that the Material Icons font is
