@@ -57,6 +57,7 @@ class _MapPageState extends State<MapPage> {
     if (mounted) setState(f);
   }
 
+
   Future<Set<Marker>> _createTrustedUserMarkers() async {
     Set<Marker> trustedUserMarkers = {};
 
@@ -77,6 +78,7 @@ class _MapPageState extends State<MapPage> {
         icon = BitmapDescriptor.defaultMarker;
       }
 
+
       Marker marker = Marker(
         markerId: MarkerId('$username'),
         position: LatLng(latitude, longitude),
@@ -93,6 +95,7 @@ class _MapPageState extends State<MapPage> {
   Future<void> _fetchMarkers() async {
     try {
       List<Point> points = await _getMarkersFromBackend();
+      //print(points.length);
       List<Future<BitmapDescriptor>> futures = points.map((point) {
         String assetPath = point.category == 'Medium'
             ? "assets/images/_yellow.png"
@@ -116,8 +119,12 @@ class _MapPageState extends State<MapPage> {
         );
       }));
 
+      Set<Marker> trustedUserMarkers = await _createTrustedUserMarkers();
+      newMarkers.addAll(trustedUserMarkers);
+
       setStateIfMounted(() {
         _markers = newMarkers;
+        //print(_markers);
       });
     } catch (e) {
       print('Error fetching markers: $e');
@@ -378,24 +385,20 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _fetchTrustedUsersLocations() async {
-    final String url =
-        '$baseURL/users/get-locations/${FirebaseAuth.instance.currentUser?.uid}';
-    try {
-      final response = await http
-          .get(Uri.parse(url), headers: {'Content-Type': 'application/json'});
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        setState(() {
-          _trustedUsersLocations = List<Map<String, dynamic>>.from(data);
-          //print(_trustedUsersLocations);
-          //print("\n");
-        });
-      } else {
-        print("Failed to fetch trusted users' locations");
-      }
-    } catch (error) {
-      print("Error fetching trusted users' locations: $error");
+  final String url = '$baseURL/users/get-locations/${FirebaseAuth.instance.currentUser?.uid}';
+  try {
+    final response = await http.get(Uri.parse(url),
+      headers: {'Content-Type': 'application/json'}
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+       _trustedUsersLocations  = List<Map<String, dynamic>>.from(data);
+      });
+    } else {
+      print("Failed to fetch trusted users' locations");
     }
   }
 
