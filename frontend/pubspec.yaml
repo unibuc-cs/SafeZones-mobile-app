@@ -84,6 +84,8 @@ flutter:
     - assets/dark_map_style.json
     - assets/images/_red.png
     - assets/images/_yellow.png
+    - assets/images/icons8-friend-64.png
+    - assets/images/contact.png
     
 
   # The following line ensures that the Material Icons font is
