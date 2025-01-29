@@ -26,6 +26,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  Set<int> _notifiedPointIds = {};
   Set<Marker> _markers = {};
   Position? _location;
   Timer? _timer;
@@ -452,6 +453,10 @@ class _MapPageState extends State<MapPage> {
                 1000 &&
             p.userId != userId) {
           nearbyPoints.add(p);
+          if (!_notifiedPointIds.contains(p.id)) {
+          _showNotification(p);
+          _notifiedPointIds.add(p.id);
+          }
         }
       }
     } catch (e) {
@@ -459,6 +464,23 @@ class _MapPageState extends State<MapPage> {
     }
     return nearbyPoints;
   }
+
+  void _showNotification(Point point) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        "New ${point.category} incident nearby: ${point.description}",
+      ),
+      duration: Duration(seconds: 5),
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.only(top: 85, bottom:720 , left: 50, right: 40),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 7),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+    ),
+  );
+}
 
   void _initLocationStream() {
     StreamSubscription<Position> positionStream = Geolocator.getPositionStream(
