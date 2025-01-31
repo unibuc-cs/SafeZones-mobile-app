@@ -8,8 +8,8 @@ on:
 
 env:
   DEV_API_URL: http://localhost:8080
-  STAGING_API_URL: https://staging.api.example.com
-  PRODUCTION_API_URL: https://api.example.com
+  STAGING_API_URL: https://staging.api.safezones.com
+  PRODUCTION_API_URL: https://api.safezones.com
 
 jobs:
   backend:
