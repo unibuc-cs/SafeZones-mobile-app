@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "develop" ]
 
+env:
+  DEV_API_URL: http://localhost:8080
+  STAGING_API_URL: https://staging.api.example.com
+  PRODUCTION_API_URL: https://api.example.com
+
 jobs:
   backend:
     name: Build & Test Backend (Maven)
@@ -43,8 +48,9 @@ jobs:
   frontend:
     name: Build & Test Flutter App
     runs-on: macos-latest
-    env:
-      API_URL: http://localhost:8080
+    strategy:
+      matrix:
+        env: [dev, staging, production]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -52,7 +58,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.x
+          flutter-version: '3.x'
           cache: true
 
       - name: Set up JDK 17
@@ -68,14 +74,18 @@ jobs:
       - name: Generate Environment File
         working-directory: ./frontend
         run: |
-          echo "API_URL=$API_URL" > .env
+          echo "API_URL=${{ matrix.env == 'dev' && env.DEV_API_URL || matrix.env == 'staging' && env.STAGING_API_URL || env.PRODUCTION_API_URL }}" > .env
 
-      - name: Build APK
+      - name: Run Tests
         working-directory: ./frontend
-        run: flutter build ipa --release
+        run: flutter test
 
-      - name: Upload APK as Artifact
+      - name: Build IPA
+        working-directory: ./frontend
+        run: flutter build ipa --release --dart-define=ENV=${{ matrix.env }}
+
+      - name: Upload IPA as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: ./frontend/build/app/outputs/flutter-apk/app-release.apk
+          name: release-ipa-${{ matrix.env }}
+          path: ./frontend/build/ios/ipa/<app_name>.ipa
