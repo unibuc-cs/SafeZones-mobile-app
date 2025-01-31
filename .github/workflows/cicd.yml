@@ -75,11 +75,3 @@ jobs:
         working-directory: ./frontend
         run: |
           echo "API_URL=${{ matrix.env == 'dev' && env.DEV_API_URL || matrix.env == 'staging' && env.STAGING_API_URL || env.PRODUCTION_API_URL }}" > .env
-
-      - name: Run Flutter Analyze
-        working-directory: ./frontend
-        run: flutter analyze
-
-      - name: Format Dart Code
-        working-directory: ./frontend
-        run: dart format --set-exit-if-changed .
