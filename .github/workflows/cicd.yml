@@ -10,6 +10,11 @@ jobs:
   backend:
     name: Build & Test Backend (Maven)
     runs-on: macos-latest
+    env:
+      SPRING_PROFILES_ACTIVE: dev
+      DATABASE_URL: jdbc:mysql://localhost:3306/dev_db
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -38,6 +43,8 @@ jobs:
   frontend:
     name: Build & Test Flutter App
     runs-on: macos-latest
+    env:
+      API_URL: http://localhost:8080
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -51,6 +58,11 @@ jobs:
       - name: Install Dependencies
         working-directory: ./frontend
         run: flutter pub get
+
+      - name: Generate Environment File
+        working-directory: ./frontend
+        run: |
+          echo "API_URL=$API_URL" > .env
 
       - name: Build APK
         working-directory: ./frontend
