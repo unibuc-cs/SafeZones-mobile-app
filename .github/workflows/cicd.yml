@@ -75,13 +75,11 @@ jobs:
         working-directory: ./frontend
         run: |
           echo "API_URL=${{ matrix.env == 'dev' && env.DEV_API_URL || matrix.env == 'staging' && env.STAGING_API_URL || env.PRODUCTION_API_URL }}" > .env
-          
-      - name: Build Web
+
+      - name: Run Flutter Analyze
         working-directory: ./frontend
-        run: flutter build web --release --dart-define=ENV=${{ matrix.env }}
-      
-      - name: Upload Web Build as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-web-${{ matrix.env }}
-          path: ./frontend/build/web
+        run: flutter analyze
+
+      - name: Format Dart Code
+        working-directory: ./frontend
+        run: dart format --set-exit-if-changed .
