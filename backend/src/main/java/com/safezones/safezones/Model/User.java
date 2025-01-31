@@ -43,6 +43,7 @@ public class User {
 
 
     public boolean getEmailVerified() { return this.emailVerified; }
+    public void setUserId(String id) { this.id = id; }
 
 }
 

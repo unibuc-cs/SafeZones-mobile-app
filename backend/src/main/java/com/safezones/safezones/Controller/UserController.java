@@ -205,7 +205,7 @@ public class UserController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             // Prepare the list of contacts
-            List<Map<String, String>> contacts = user.getContacts().stream()
+            List<Map<String, String>> contacts = user.getAddedBy().stream()
                     .map(contact -> {
                         Map<String, String> contactInfo = new HashMap<>();
                         contactInfo.put("username", contact.getUsername());
@@ -286,7 +286,7 @@ public class UserController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
-            List<Map<String, String>> contacts = user.getContacts().stream()
+            List<Map<String, String>> contacts = user.getAddedBy().stream()
                     .map(contact -> {
                         Map<String, String> contactInfo = new HashMap<>();
                         contactInfo.put("username", contact.getUsername());
