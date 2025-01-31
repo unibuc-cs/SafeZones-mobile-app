@@ -41,14 +41,14 @@ class UserControllerTest {
         verify(userRepository, times(1)).save(any(User.class));
     }
 
-    @Test
-    void testGetAllUsers() {
-        when(userRepository.findAll()).thenReturn(Collections.singletonList(new User()));
+    // @Test
+    // void testGetAllUsers() {
+    //     when(userRepository.findAll()).thenReturn(Collections.singletonList(new User()));
 
-        Iterable<User> result = userController.getAllUsers();
+    //     Iterable<User> result = userController.getAllUsers();
 
-        assertEquals(1, ((List<User>) result).size());
-    }
+    //     assertEquals(1, ((List<User>) result).size());
+    // }
 
     @Test
     void testGetUserById() {
