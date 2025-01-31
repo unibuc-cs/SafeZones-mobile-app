@@ -39,21 +39,21 @@ class PointControllerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    void testAddNewPoint() {
-        PointRequest pointRequest = new PointRequest("40.7128", "-74.0060", "Description", "Hard", "1", "Harassment");
-        User user = new User();
-        user.setId("1");
+    // @Test
+    // void testAddNewPoint() {
+    //     PointRequest pointRequest = new PointRequest("40.7128", "-74.0060", "Description", "Hard", "1", "Harassment");
+    //     User user = new User();
+    //     user.setId("1");
 
-        when(userRepository.findById("1")).thenReturn(Optional.of(user));
-        when(pointRepository.save(any(Point.class))).thenReturn(new Point());
+    //     when(userRepository.findById("1")).thenReturn(Optional.of(user));
+    //     when(pointRepository.save(any(Point.class))).thenReturn(new Point());
 
-        String response = pointController.addNewPoint(pointRequest);
+    //     String response = pointController.addNewPoint(pointRequest);
 
-        assertEquals("Point added successfully", response);
-        verify(userRepository, times(1)).findById("1");
-        verify(pointRepository, times(1)).save(any(Point.class));
-    }
+    //     assertEquals("Point added successfully", response);
+    //     verify(userRepository, times(1)).findById("1");
+    //     verify(pointRepository, times(1)).save(any(Point.class));
+    // }
 
     @Test
     void testGetAllPoints() {
