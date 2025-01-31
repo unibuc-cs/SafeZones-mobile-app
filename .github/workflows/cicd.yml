@@ -67,6 +67,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Install Fastlane
+        run: gem install fastlane
+      
+      - name: Sync Certificates
+        run: |
+          cd ios
+          fastlane match development --readonly
+
       - name: Install Dependencies
         working-directory: ./frontend
         run: flutter pub get
