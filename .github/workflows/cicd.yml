@@ -67,14 +67,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Fastlane
-        run: gem install fastlane
-      
-      - name: Sync Certificates
-        run: |
-          cd ios
-          fastlane match development --readonly
-
       - name: Install Dependencies
         working-directory: ./frontend
         run: flutter pub get
@@ -84,12 +76,12 @@ jobs:
         run: |
           echo "API_URL=${{ matrix.env == 'dev' && env.DEV_API_URL || matrix.env == 'staging' && env.STAGING_API_URL || env.PRODUCTION_API_URL }}" > .env
           
-      - name: Build IPA
+      - name: Build Web
         working-directory: ./frontend
-        run: flutter build ipa --release --dart-define=ENV=${{ matrix.env }}
-
-      - name: Upload IPA as Artifact
+        run: flutter build web --release --dart-define=ENV=${{ matrix.env }}
+      
+      - name: Upload Web Build as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-ipa-${{ matrix.env }}
-          path: ./frontend/build/ios/ipa/<app_name>.ipa
+          name: release-web-${{ matrix.env }}
+          path: ./frontend/build/web
